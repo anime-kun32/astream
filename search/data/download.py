@@ -1,4 +1,4 @@
-# if you ran the getanimelist.py on Google collab ran this code in a cell to download the anime.json file 
+# if you ran the getanimelist.py on Google collab run this code in a new  cell to download the anime.json file 
 from google.colab import files  
 
 # Download the file  
