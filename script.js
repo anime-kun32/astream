@@ -16,7 +16,7 @@ var dataTitle;
 var dataEpisode;
 var dataURL;
 
-const apiEndpoint ="no-drab.vercel.app";
+const apiEndpoint ="anime-kun32.vercel.app";
 
 // Randomly set player iframes to these video onLoad
 var youtubeLinks = [
