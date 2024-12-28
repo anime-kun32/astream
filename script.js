@@ -285,7 +285,7 @@ function displayWatchInfo(episodeData) {
             if (appParam == 'true') {
                 updateUrl(`?playInApp=${selectedServer}`);
             } else {
-                videoPlayer.src = `/player/?url=https://gogoanime-and-hianime-proxy.vercel.app/hls-proxy?url=${selectedServer}`;
+                videoPlayer.src = `/player/?url=https://gogoanime-and-hianime-proxy-nn.vercel.app/hls-proxy?url=${selectedServer}`;
             }
         });
     };
