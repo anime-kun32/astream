@@ -1,33 +1,32 @@
 // @ts-nocheck
 ; (function () {
-  var danmakuScriptCdn = 'https://cdn.jsdelivr.net/npm/@oplayer/danmaku@latest/dist/index.min.js'
+  var danmakuScriptCdn = 'https://cdn.jsdelivr.net/npm/@oplayer/danmaku@latest/dist/index.min.js';
 
-  var query = document.location.search.substring(1)
-  var src, poster, subtitle, danmaku, watermark
+  var query = document.location.search.substring(1);
+  var src, poster, subtitle, danmaku, watermark;
   var playlist = [],
     deps = [],
     m3u = false,
     p = undefined,
-    title = 'Watxh',
-    txt = ''
+    title = 'OPlayer',
+    txt = '';
 
-  var _query = decodeURIComponent(query || '')
+  var _query = decodeURIComponent(query || '');
   if (_query.startsWith('http')) {
-    // ?https://xx.com= 有时候会自动带上 “=”
-    src = _query.endsWith('=') ? _query.substring(0, _query.length - 1) : query
+    src = _query.endsWith('=') ? _query.substring(0, _query.length - 1) : query;
   } else if (_query.endsWith('=')) {
-    src = atob(_query)
+    src = atob(_query);
   } else {
-    var search = new URLSearchParams(document.location.search)
-    src = safeDecodeURIComponent(search.get('src'))
-    playlist = JSON.parse(safeDecodeURIComponent(search.get('playlist')) || '[]')
-    poster = safeDecodeURIComponent(search.get('poster'))
-    title = safeDecodeURIComponent(search.get('title')) || '❤OPlayer'
-    danmaku = safeDecodeURIComponent(search.get('danmaku'))
-    m3u = safeDecodeURIComponent(search.get('m3u'))
-    p = search.has('p') ? search.get('p') : undefined
-    p == '' ? (p = undefined) : (p = +p)
-    txt = safeDecodeURIComponent(search.get('txt'))
+    var search = new URLSearchParams(document.location.search);
+    src = safeDecodeURIComponent(search.get('src'));
+    playlist = JSON.parse(safeDecodeURIComponent(search.get('playlist')) || '[]');
+    poster = safeDecodeURIComponent(search.get('poster'));
+    title = safeDecodeURIComponent(search.get('title')) || '❤OPlayer';
+    danmaku = safeDecodeURIComponent(search.get('danmaku'));
+    m3u = safeDecodeURIComponent(search.get('m3u'));
+    p = search.has('p') ? search.get('p') : undefined;
+    p == '' ? (p = undefined) : (p = +p);
+    txt = safeDecodeURIComponent(search.get('txt'));
 
     subtitle = search.get('subtitle')
       ? {
@@ -39,7 +38,7 @@
           }
         ]
       }
-      : undefined
+      : undefined;
 
     watermark = search.get('watermark')
       ? {
@@ -52,16 +51,16 @@
           height: 'auto'
         }
       }
-      : undefined
+      : undefined;
   }
 
-  if (title && title != '❤OPlayer') document.title = title
+  if (title && title != '❤OPlayer') document.title = title;
 
   if (/m3u(#|\?|$)/i.test(src) || m3u) {
-    playlist = [{ title: '-', src: typeof m3u == 'string' ? m3u : src, poster }]
-    m3u = true
-    src = undefined
-    deps.push(['https://cdn.jsdelivr.net/npm/m3u8-parser@7.1.0/dist/m3u8-parser.min.js'])
+    playlist = [{ title: '-', src: typeof m3u == 'string' ? m3u : src, poster }];
+    m3u = true;
+    src = undefined;
+    deps.push(['https://cdn.jsdelivr.net/npm/m3u8-parser@7.1.0/dist/m3u8-parser.min.js']);
   }
 
   if (txt) {
@@ -69,14 +68,14 @@
       .then((r) => r.text())
       .then((text) => {
         playlist = text.split('\n').map((line) => {
-          const [title, src] = line.split(',')
-          return { title, src: src }
-        })
+          const [title, src] = line.split(',');
+          return { title, src: src };
+        });
       })
       .then(applyPlaylist)
       .catch((e) => {
-        player.emit('error', e)
-      })
+        player.emit('error', e);
+      });
   }
 
   var player = OPlayer.make('#oplayer', {
@@ -93,7 +92,6 @@
             slideToSeek: 'always'
           }
         },
-
         subtitle,
         pictureInPicture: true,
         keyboard: { global: true },
@@ -104,10 +102,10 @@
               (e.message ? `${e.message}\n\n` : '') +
               (e.code ? `ErrorCode:${e.code} \n\n` : '') +
               'Open an issues https://github.com/shiyiya/oplayer/issues/new/choose'
-          })
+          });
         },
-
         icons: {
+          // SVG icons can be added here
           play: `<svg style='transform:scale(2)' viewBox='0 0 24 24' > <rect width='24' height='24' fill='none'<path fill='white' fill-rule='evenodd' d='M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10' clip-rule='evenodd' opacity='0.4'/> <path fill='white' d='m15.414 13.059l-4.72 2.787C9.934 16.294 9 15.71 9 14.786V9.214c0-.924.934-1.507 1.694-1.059l4.72 2.787c.781.462.781 1.656 0 2.118' /></svg>`,
           // play: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect width="24" height="24" fill="none" /><path fill="white" d="M21.409 9.353a2.998 2.998 0 0 1 0 5.294L8.597 21.614C6.534 22.737 4 21.277 4 18.968V5.033c0-2.31 2.534-3.769 4.597-2.648z" /></svg>`,
           // pause: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect width="24" height="24" fill="none" /><path fill="none" stroke="white" stroke-width="2" d="M2 6c0-1.886 0-2.828.586-3.414C3.172 2 4.114 2 6 2c1.886 0 2.828 0 3.414.586C10 3.172 10 4.114 10 6v12c0 1.886 0 2.828-.586 3.414C8.828 22 7.886 22 6 22c-1.886 0-2.828 0-3.414-.586C2 20.828 2 19.886 2 18zm12 0c0-1.886 0-2.828.586-3.414C15.172 2 16.114 2 18 2c1.886 0 2.828 0 3.414.586C22 3.172 22 4.114 22 6v12c0 1.886 0 2.828-.586 3.414C20.828 22 19.886 22 18 22c-1.886 0-2.828 0-3.414-.586C14 20.828 14 19.886 14 18z" /></svg>`,
@@ -144,34 +142,34 @@
     .create()
     .on((e) => {
       if (e.type != 'timeupdate' || e.type != 'progress') {
-        console.log(e)
+        console.log(e);
       }
-    })
+    });
 
   if (danmaku || playlist.some((it) => it.danmaku)) {
     deps.push([
       danmakuScriptCdn,
       () => {
-        player.applyPlugin(ODanmaku({ source: danmaku }))
+        player.applyPlugin(ODanmaku({ source: danmaku }));
       }
-    ])
+    ]);
   }
 
   loadScripts(deps.map(([s]) => s)).then(() => {
     if (isNaN(p) || typeof p != 'number') {
       player.once('playlistchange', () => {
         setTimeout(() => {
-          player.context.playlist.showUI()
-        })
-      })
+          player.context.playlist.showUI();
+        });
+      });
     }
 
     try {
-      deps.map(([_, fn]) => fn && fn())
+      deps.map(([_, fn]) => fn && fn());
     } catch (error) { }
 
-    applyPlaylist()
-  })
+    applyPlaylist();
+  });
 
   function applyPlaylist() {
     if (playlist.length) {
@@ -184,76 +182,74 @@
             ? {
               sourceFormat(info) {
                 try {
-                  const chunk = info.title.substring(3).split('" ')
-                  const titleWith = /group-title="(.+",.+)/.exec(info.title)
-                  const posterWith = /tvg-logo="(.+)"/.exec(info.title)
+                  const chunk = info.title.substring(3).split('" ');
+                  const titleWith = /group-title="(.+",.+)/.exec(info.title);
+                  const posterWith = /tvg-logo="(.+)"/.exec(info.title);
                   return {
                     src: info.uri,
                     format: 'm3u8',
                     title: titleWith ? titleWith[1] : /group-title="(.+)"/.exec(info.title)[1],
                     poster: posterWith && posterWith[1]
-                  }
+                  };
                 } catch (error) {
-                  return { src: info.uri, title: info.title, format: 'm3u8' }
+                  return { src: info.uri, title: info.title, format: 'm3u8' };
                 }
               }
             }
             : false
         })
-      )
+      );
     }
   }
 
   player.on('ratechange', () => {
     if (!player.isSourceChanging)
-      localStorage.setItem('@oplayer/UserPreferences/speed', player.playbackRate.toString())
-  })
+      localStorage.setItem('@oplayer/UserPreferences/speed', player.playbackRate.toString());
+  });
 
   player.on('volumechange', () => {
-    localStorage.setItem('@oplayer/UserPreferences/volume', player.volume.toString())
-  })
+    localStorage.setItem('@oplayer/UserPreferences/volume', player.volume.toString());
+  });
 
   function keepTime(e) {
-    document.title = e.payload.title
-    var prevTime = localStorage.getItem(e.payload.src)
+    document.title = e.payload.title;
+    var prevTime = localStorage.getItem(e.payload.src);
     if (prevTime) {
       player.once('loadedmetadata', () => {
-        player.seek(prevTime - 1)
-      })
+        player.seek(prevTime - 1);
+      });
     }
   }
-  player.on('videosourcechange', keepTime)
+  player.on('videosourcechange', keepTime);
   if (src) {
-    keepTime({ payload: { src, title } })
+    keepTime({ payload: { src, title } });
   }
 
   player.on('timeupdate', () => {
-    localStorage.setItem(player.options.source.src, player.currentTime.toString())
-  })
+    localStorage.setItem(player.options.source.src, player.currentTime.toString());
+  });
 
   new Promise(() => {
-    // https://stackoverflow.com/questions/6370690/media-queries-how-to-target-desktop-tablet-and-mobile
-    var $op = document.querySelector('#oplayer')
-    // not in iframe
+    var $op = document.querySelector('#oplayer');
     if (window.self == window.top && $op.clientWidth > 761) {
-      $op.firstElementChild.children[1].style.fontSize = $op.clientWidth > 1024 ? '24px' : '22px'
+      $op.firstElementChild.children[1].style.fontSize = $op.clientWidth > 1024 ? '24px' : '22px';
     }
-  })
+  });
 
   function loadScripts(scripts) {
     return Promise.all(
       scripts.map((s) => {
         return new Promise((r, f) => {
-          var t = document.body.appendChild(document.createElement('script'))
-          t.src = s
-          t.onload = r
-          t.onerror = f
-        })
+          var t = document.body.appendChild(document.createElement('script'));
+          t.src = s;
+          t.onload = r;
+          t.onerror = f;
+        });
       })
-    )
+    );
   }
 
   function safeDecodeURIComponent(uri) {
-    return uri ? decodeURIComponent(uri) : undefined
+    return uri ? decodeURIComponent(uri) : undefined;
   }
-})()
+})();
